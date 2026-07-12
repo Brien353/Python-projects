@@ -47,3 +47,20 @@ def data_statistics(df: pd.DataFrame) -> pd.DataFrame:
     return resume
 
 
+def feat_eng(df:pd.DataFrame)-> pd.DataFrame:
+    df['bathrooms_per_bedroom'] = np.where(
+    df['bedrooms'] > 0,
+    df['bathrooms'] / df['bedrooms'],
+    df['bathrooms'])
+    return df
+
+
+def corr_mat(df: pd.DataFrame)->pd.DataFrame:
+    """Calculate the correlation matrix and return it"""
+    num_cols , _ =num_cat_cols_lst(df)
+    dg = df.copy()
+    dg = dg[num_cols]
+    corr_mat = pd.DataFrame(dg.corr())
+    return corr_mat
+
+
