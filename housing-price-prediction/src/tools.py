@@ -4,7 +4,7 @@ import numpy as np
 
 #Load data
 
-def load_housig_data(file_path : str) ->pd.DataFrame:
+def load_data(file_path : str) ->pd.DataFrame:
     """Loads the housing data set from a given path"""
     df = pd.read_csv(file_path)
     return df

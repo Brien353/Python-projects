@@ -2,7 +2,7 @@ import os
 from config.clust_config import cat_cl_feat, num_cl_feat
 from config.general_settings import raw_data_folder, processed_data_folder, raw_data_path, segmented_data_path
 from src.graph import box_plt, corr_map_plt, dist_plt,clust_plot
-from src.tools import corr_mat, data_statistics, feat_eng, general_desc, load_housig_data, num_cat_cols_lst
+from src.tools import corr_mat, data_statistics, feat_eng, general_desc, load_data, num_cat_cols_lst
 from src.pippe import projection_pipe
 from sklearn.cluster import HDBSCAN
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
         print("="*60)
 
         print("Data is going to be loaded...")
-        df = load_housig_data(raw_data_path)
+        df = load_data(raw_data_path)
         print("Data loaded successfully.")
 
 
@@ -145,6 +145,11 @@ if __name__ == "__main__":
         print("\n" + "="*60)
         print("Initializing  Supervised Machine Learnig Algorithms")
         print("="*60)
+
+
+        print("\n---Loading preprocessed data---")
+        segmented_housing_df = load_data(segmented_data_path)
+        print("\n---Segmented data loaded successfully---")
 
 
 
