@@ -1,19 +1,29 @@
+import os
 from config.clust_config import cat_cl_feat, num_cl_feat
+from config.general_settings import raw_data_folder, processed_data_folder, raw_data_path, segmented_data_path
 from src.graph import box_plt, corr_map_plt, dist_plt,clust_plot
 from src.tools import corr_mat, data_statistics, feat_eng, general_desc, load_housig_data, num_cat_cols_lst
 from src.pippe import projection_pipe
 from sklearn.cluster import HDBSCAN
 if __name__ == "__main__":
-    data_path = "/home/briennavarro/Python-projects/housing-price-prediction/data/raw/Housing.csv"
-    print("Running program...")
+    
 
     try:
-        # 1. Load Data
+        print("\n"+ "="*60)
+        print("Program initialized successfully")
+        print("="*60)
+
+
+
+        print("\n"+ "="*60)
+        print("Exploratory Data Analysis initialized successfully")
+        print("="*60)
+
         print("Data is going to be loaded...")
-        df = load_housig_data(data_path)
+        df = load_housig_data(raw_data_path)
         print("Data loaded successfully.")
 
-        # 2. Exploratory Data Analysis (EDA)
+
         print("\n--- Generating Statistics Resume ---")
         general_desc(df)
 
@@ -106,8 +116,34 @@ if __name__ == "__main__":
             print(f"Stories/Parking: {row['stories']:,.1f} stories / {row['parking']:,.1f} spots")
             print(f"Profile Summary: {desc}")
             print("-" * 60)
+        
+        print("\n" + "="*60)
+        print("Outlier analysis")
+        print("="*60)
 
-            
+        outliers = X.copy()
+        outliers['Cluster'] = cluster_labels
+        outliers['price'] = y
+        outliers = outliers[outliers['Cluster'] == -1]
+        
+        print(f"\n--- HDBSCAN identified {len(outliers)} anomalous properties ---")
+        if not outliers.empty:
+            print(outliers.select_dtypes(include=['number']).mean())
+
+          
+        print("\n" + "="*60)
+        print("Exporting Segmented data")
+        print("="*60)
+
+        df_engineered['Cluster'] = cluster_labels
+        export_filename = "Housing_segmented.csv"
+        full_export_path = os.path.join(processed_data_folder, export_filename)
+        df_engineered.to_csv(full_export_path, index=False)
+        print(f"Segmented data successfully exported to: {full_export_path}")
+
+        
+
+
 
 
 
@@ -117,6 +153,6 @@ if __name__ == "__main__":
 
 
     except FileNotFoundError:
-        print(f"Error: The file at {data_path} could not be found.")
+        print(f"Error: The file at {raw_data_path} could not be found.")
     except Exception as e:
         print(f"An unexpected error occurred during execution: {e}")
