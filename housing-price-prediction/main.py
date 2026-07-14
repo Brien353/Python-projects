@@ -152,8 +152,6 @@ if __name__ == "__main__":
         print("\n---Segmented data loaded successfully---")
 
 
-
-
     except FileNotFoundError:
         print(f"Error: The file at {raw_data_path} could not be found.")
     except Exception as e:
