@@ -1,14 +1,33 @@
-import sys
-import os
+from pathlib import Path
+# ==========================================
+# 1. PATH CONFIGURATION
+# ==========================================
+ 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-#Folders path
+RAW_DATA_FOLDER = PROJECT_ROOT / "data" / "raw"
+PROCESSED_DATA_FOLDER = PROJECT_ROOT / "data" / "processed"
+RAW_DATA_PATH = RAW_DATA_FOLDER / "Housing.csv"
+SEGMENTED_DATA_PATH = PROCESSED_DATA_FOLDER / "Housing_segmented.csv"
 
-raw_data_folder = r"D:\brien.navarro\Documents\Python-projects\housing-price-prediction\data\raw"
 
-processed_data_folder = r"D:\brien.navarro\Documents\Python-projects\housing-price-prediction\data\processed"
+# ==========================================
+# 2. FEATURE SCHEMA
+# ==========================================
+NUM_CL_FEAT = [
+    'area',
+    'bedrooms',
+    'bathrooms',
+    'stories',
+    'parking'
+]
 
-# Particular files path
-raw_data_path = r"D:\brien.navarro\Documents\Python-projects\housing-price-prediction\data\raw\Housing.csv"
-# Segmented data path
-segmented_data_path = r"D:\brien.navarro\Documents\Python-projects\housing-price-prediction\data\processed\Housing_segmented.csv"
-
+CAT_CL_FEAT = [
+    'mainroad',
+    'guestroom',
+    'basement',
+    'hotwaterheating',
+    'airconditioning',
+    'prefarea',
+    'furnishingstatus'
+]
