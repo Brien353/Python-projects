@@ -2,9 +2,9 @@ name: PySpark Docker Build & Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "origin" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "origin" ]
 
 jobs:
   build:
