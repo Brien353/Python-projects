@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run the PySpark pipeline
-CMD ["python", "src/spark_pipeline.py"]
+CMD ["python", "spark_pipeline.py"]
