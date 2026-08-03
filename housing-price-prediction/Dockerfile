@@ -5,6 +5,7 @@ FROM python:3.10-slim
 RUN apt-get update && apt-get install -y \
     openjdk-21-jre-headless \
     && rm -rf /var/lib/apt-get/lists/*
+
 # Set Java environment variables
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
@@ -18,5 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project code
 COPY . .
 
-# Run the PySpark pipeline
-CMD ["python", "spark_pipeline.py"]
+# Set the base executable
+ENTRYPOINT ["python", "main.py"]
+
+# Set default argument (can be overridden during 'docker run')
+CMD ["--config", "config/config.dev.yml"]
