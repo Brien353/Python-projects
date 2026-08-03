@@ -2,3 +2,4 @@ pyspark
 findspark
 numpy
 pandas
+flake8
