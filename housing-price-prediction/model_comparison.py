@@ -5,8 +5,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 from src.pipelines import linear_model_pipe
 from config.general_settings import SEGMENTED_DATA_PATH
 
-
-
 def evaluate_model(name, model, X_train, y_train, X_test, y_test):
     """Runs CV, fits the model, and calculates test metrics for a single model."""
     print(f"\n{'='*40}")
