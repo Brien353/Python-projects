@@ -18,8 +18,7 @@ jobs:
       uses: docker/setup-buildx-action@v2
 
     - name: Build Docker Image
-      run: |
-        docker build -t pyspark-housing-pipeline .
+      run: docker build -f housing-price-prediction/Dockerfile -t pyspark-housing-pipeline housing-price-prediction
 
     - name: Test Container Execution
       run: |
