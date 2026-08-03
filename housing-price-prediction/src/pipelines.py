@@ -6,6 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from config.general_settings import CAT_CL_FEAT, NUM_CL_FEAT
 from typing import List
+from sklearn.svm import SVR
 
 def num_pipe() -> Pipeline:
     """
@@ -86,3 +87,5 @@ def linear_model_pipe() -> Pipeline:
             ('lin_reg', LinearRegression())
         ]
     )
+
+

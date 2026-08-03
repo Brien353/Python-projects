@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_squared_error, r2_score
 # Local imports
-from src.pipelines import linear_model_pipe
+from src.pipelines import linear_model_pipe, svr_model_pipe
 from config.general_settings import SEGMENTED_DATA_PATH
 
 def evaluate_model(name, model, X_train, y_train, X_test, y_test):
@@ -56,7 +56,8 @@ def main():
     # DICTIONARY OF MODELS TO TEST
     # ==========================================
     models_to_test = {
-        "Linear Regression": linear_model_pipe()
+        "Linear Regression": linear_model_pipe(),
+        "Support vector regressor" : svr_model_pipe()
     }
     
     # Dictionary to store predictions for plotting

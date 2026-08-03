@@ -1,25 +1,62 @@
-name: PySpark Docker Build & Test
+# Define name of the workflow
+name: Continuous integration pipeline (CI) for ML housing-project
 
+# Triggers
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+# Tasks executed when push or pull requests are performed
 jobs:
-  build:
+  code-quality-and-tests:
+    name: Linting and unit tests
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-    - name: Build Docker Image
-      run: docker build -f housing-price-prediction/Dockerfile -t pyspark-housing-pipeline housing-price-prediction
+      - name: Install java for pyspark
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jdk
 
-    - name: Test Container Execution
-      run: |
-        docker run --rm pyspark-housing-pipeline
+      - name: Install project requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest chispa
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint code with flake8
+        run: |
+          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+
+      - name: Execute pytest suite
+        run: |
+          pytest tests/ -v
+
+  docker-build-and-test:
+    name: Docker build and container test
+    needs: code-quality-and-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -f housing-price-prediction/Dockerfile -t pyspark-housing-pipeline housing-price-prediction
+
+      - name: Test container execution
+        run: |
+          docker run --rm pyspark-housing-pipeline --config config/config.dev.yml
