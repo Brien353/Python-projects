@@ -27,7 +27,7 @@ jobs:
         - name : Build and push docker image
           uses : docker/build-push-action@v5
           with:
-            context : .
+            context : ./housing-price-prediction
             file : ./housing-price-prediction/Dockerfile
             push : ${{github.event_name == 'push'}}
             tags : ${{secrets.DOCKERHUB_USERNAME}}/pyspark-housing-pipeline:latest
