@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Set the base executable
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "spark_pipeline.py"]
 
 # Set default argument (can be overridden during 'docker run')
 CMD ["--config", "config/config.dev.yml"]
