@@ -11,7 +11,7 @@ import pandas as pd
 from config.general_settings import SEGMENTED_DATA_PATH
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import cross_val_score, train_test_split
-from src.pipelines import linear_model_pipe
+from src.models.pipelines import linear_model_pipe
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 ARTIFACTS_DIR = PROJECT_ROOT / "models" / "artifacts"
