@@ -30,7 +30,9 @@ jobs:
             context : ./housing-price-prediction
             file : ./housing-price-prediction/Dockerfile
             push : ${{github.event_name == 'push'}}
-            tags : ${{secrets.DOCKERHUB_USERNAME}}/pyspark-housing-pipeline:latest
+            tags : |
+              ${{ secrets.DOCKERHUB_USERNAME }}/pyspark-housing-pipeline:latest
+              ${{ secrets.DOCKERHUB_USERNAME }}/pyspark-housing-pipeline:${{ github.sha }}
 
     
     

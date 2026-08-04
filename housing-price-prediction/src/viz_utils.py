@@ -170,3 +170,6 @@ def residual_plt(pred: np.ndarray, residuals: np.ndarray,
     
     fig.tight_layout()
     return ax
+
+
+X = hola
