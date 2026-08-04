@@ -16,11 +16,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project code
 COPY . .
 
-# Set the base executable
 ENTRYPOINT ["python", "spark_pipeline.py"]
 
-# Set default argument (can be overridden during 'docker run')
 CMD ["--config", "config/config.dev.yml"]

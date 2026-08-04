@@ -1,12 +1,11 @@
 import umap
+from config.general_settings import CAT_CL_FEAT, NUM_CL_FEAT
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from config.general_settings import CAT_CL_FEAT, NUM_CL_FEAT
-from typing import List
-from sklearn.svm import SVR
+
 
 def num_pipe() -> Pipeline:
     """
@@ -19,7 +18,6 @@ def num_pipe() -> Pipeline:
             ('scaler', StandardScaler())
         ]
     )
-
 
 def cat_pipe() -> Pipeline:
     """
@@ -34,8 +32,8 @@ def cat_pipe() -> Pipeline:
     )
 
 
-def prep_pipe(num_features: List[str] = NUM_CL_FEAT, 
-              cat_features: List[str] = CAT_CL_FEAT) -> ColumnTransformer:
+def prep_pipe(num_features: list[str] = NUM_CL_FEAT, 
+              cat_features: list[str] = CAT_CL_FEAT) -> ColumnTransformer:
     """
     Combines the numerical and categorical parallel processing branches.
     
@@ -87,5 +85,4 @@ def linear_model_pipe() -> Pipeline:
             ('lin_reg', LinearRegression())
         ]
     )
-
 

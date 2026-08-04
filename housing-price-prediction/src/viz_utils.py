@@ -1,6 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.axes import Axes
 
@@ -19,24 +19,6 @@ def dist_plt(df: pd.DataFrame, var: str, show_kde: bool = False,
              figsize: tuple = (10, 8), log_scale: bool = True) -> Axes:
     """
     Plots a histogram distribution of a specified DataFrame column.
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        The dataset containing the variable.
-    var : str
-        The column name to plot.
-    show_kde : bool, default=False
-        Whether to overlay a Kernel Density Estimate curve.
-    figsize : tuple, default=(10, 8)
-        Dimensions of the figure.
-    log_scale : bool, default=True
-        Whether to apply a logarithmic scale to the x-axis.
-        
-    Returns:
-    --------
-    matplotlib.axes.Axes
-        The axes object containing the plot.
     """
     mean_val = df[var].mean()
     median_val = df[var].median()
@@ -170,6 +152,3 @@ def residual_plt(pred: np.ndarray, residuals: np.ndarray,
     
     fig.tight_layout()
     return ax
-
-
-X = hola

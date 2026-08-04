@@ -1,0 +1,23 @@
+name: ML general settings
+
+paths:
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  raw_data_file: "data/raw/Housing.csv"
+  segmented_data_file: "data/processed/Housing_segmented.csv"
+
+features:
+  numerical:
+    - area
+    - bedrooms
+    - bathrooms
+    - stories
+    - parking
+  categorical:
+    - mainroad
+    - guestroom
+    - basement
+    - hotwaterheating
+    - airconditioning
+    - prefarea
+    - furnishingstatus

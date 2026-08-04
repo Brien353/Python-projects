@@ -1,33 +1,16 @@
 from pathlib import Path
-# ==========================================
-# 1. PATH CONFIGURATION
-# ==========================================
- 
+
+import yaml
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_PATH = PROJECT_ROOT / "config" / "config.yml"
 
-RAW_DATA_FOLDER = PROJECT_ROOT / "data" / "raw"
-PROCESSED_DATA_FOLDER = PROJECT_ROOT / "data" / "processed"
-RAW_DATA_PATH = RAW_DATA_FOLDER / "Housing.csv"
-SEGMENTED_DATA_PATH = PROCESSED_DATA_FOLDER / "Housing_segmented.csv"
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+    _raw_config = yaml.safe_load(f)
 
+RAW_DATA_PATH = PROJECT_ROOT / _raw_config["paths"]["raw_data_file"]
+SEGMENTED_DATA_PATH = PROJECT_ROOT / _raw_config["paths"]["segmented_data_file"]
 
-# ==========================================
-# 2. FEATURE SCHEMA
-# ==========================================
-NUM_CL_FEAT = [
-    'area',
-    'bedrooms',
-    'bathrooms',
-    'stories',
-    'parking'
-]
-
-CAT_CL_FEAT = [
-    'mainroad',
-    'guestroom',
-    'basement',
-    'hotwaterheating',
-    'airconditioning',
-    'prefarea',
-    'furnishingstatus'
-]
+# Feature Schema
+NUM_CL_FEAT = _raw_config["features"]["numerical"]
+CAT_CL_FEAT = _raw_config["features"]["categorical"]

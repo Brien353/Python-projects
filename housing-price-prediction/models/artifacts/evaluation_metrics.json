@@ -1,0 +1,10 @@
+{
+  "Linear Regression": {
+    "model_name": "Linear Regression",
+    "cv_rmse_percentage": 21.664600357612194,
+    "cv_r2_percentage": 62.322530934046036,
+    "test_rmse": 1324506.9600914407,
+    "test_rmse_percentage": 26.450269666908877,
+    "test_r2_percentage": 65.29242642153173
+  }
+}

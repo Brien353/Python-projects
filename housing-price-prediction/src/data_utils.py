@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def load_data(file_path: str) -> pd.DataFrame:
@@ -45,7 +45,6 @@ def feat_eng(df: pd.DataFrame) -> pd.DataFrame:
             df['bathrooms']
         )
     )
-
 
 def corr_mat(df: pd.DataFrame) -> pd.DataFrame:
     """Calculates and returns the correlation matrix for numerical features."""

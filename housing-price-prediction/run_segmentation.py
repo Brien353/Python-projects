@@ -1,8 +1,9 @@
 import os
-from sklearn.cluster import HDBSCAN
 import matplotlib.pyplot as plt
+from sklearn.cluster import HDBSCAN
+
 # Local imports
-from config.general_settings import PROCESSED_DATA_FOLDER,RAW_DATA_PATH
+from config.general_settings import PROCESSED_DATA_FOLDER, RAW_DATA_PATH
 from src.viz_utils import box_plt, corr_map_plt, dist_plt, clust_plot
 from src.data_utils import corr_mat, general_desc, feat_eng, load_data
 from src.pipelines import projection_pipe
@@ -42,7 +43,6 @@ def main():
         corr_map_plt(correlation_matrix)
         plt.show()
 
-
         # ==========================================
         # 2. FEATURE ENGINEERING & REDUCTION
         # ==========================================
@@ -56,7 +56,6 @@ def main():
         pipeline = projection_pipe()
         embedding = pipeline.fit_transform(X)
         print(f"Projected high-dimensional data into shape: {embedding.shape}")
-
 
         # ==========================================
         # 3. CLUSTERING (HDBSCAN)
@@ -76,13 +75,12 @@ def main():
         clust_plot(embedding, cluster_labels)
         plt.show()
 
-
         # ==========================================
         # 4. PROFILING & SEGMENTATION INSIGHTS
         # ==========================================
         print_header("Housing Market Segmentation Insights")
         
-        # Add cluster labels to our main dataframe exactly ONCE to save memory
+        # Add cluster labels to dataframe
         df_engineered['Cluster'] = cluster_labels
         
         # Split clustered data from anomalies (-1)
@@ -94,28 +92,25 @@ def main():
         
         print("The UMAP + HDBSCAN pipeline successfully uncovered distinct housing tiers.\n")
 
-        # iterrows() is the cleanest way to loop through a Pandas dataframe's rows
-        for cluster_id, row in housing_profiles.iterrows():
-            if cluster_id == 0:
-                tier_name = "Cluster 0: Entry-Level & Budget Homes"
-                desc = "Smallest footprint, single-bathroom starter homes with minimal parking."
-            elif cluster_id == 1:
-                tier_name = "Cluster 1: Premium Multi-Story Luxury Estates"
-                desc = "Largest footprint, heavily vertical (3.7+ stories), high-end premium market."
-            elif cluster_id == 2:
-                tier_name = "Cluster 2: Spacious Suburban Family Homes"
-                desc = "Highest bedroom/bathroom counts, spread horizontally. High utility for families."
-            else:
-                tier_name = f"Cluster {cluster_id}"
-                desc = "Unclassified structural tier."
+        tier_descriptions = {
+            0: ("Entry-Level & Budget Homes", "Smallest footprint, single-bathroom starter homes with minimal parking."),
+            1: ("Premium Multi-Story Luxury Estates", "Largest footprint, heavily vertical (3.7+ stories), high-end premium market."),
+            2: ("Spacious Suburban Family Homes", "Highest bedroom/bathroom counts, spread horizontally. High utility for families.")
+        }
 
-            print(f"{tier_name}{desc}")
+        for cluster_id, row in housing_profiles.iterrows():
+            tier_title, desc = tier_descriptions.get(
+                cluster_id, 
+                (f"Cluster {cluster_id}", "Unclassified structural tier.")
+            )
+
+            print(f"Cluster {cluster_id}: {tier_title}")
+            print(f"Description:     {desc}")
             print(f"Avg Price:       ${row['price']:,.2f}")
             print(f"Avg Area:        {row['area']:,.1f} sq ft")
             print(f"Bed/Bath Ratio:  {row['bedrooms']:,.1f} beds / {row['bathrooms']:,.1f} baths")
             print(f"Stories/Parking: {row['stories']:,.1f} stories / {row['parking']:,.1f} spots")
             print("-" * 60)
-
 
         # ==========================================
         # 5. OUTLIER ANALYSIS
@@ -126,12 +121,14 @@ def main():
             print("\nOutlier Averages:")
             print(outliers_df[numeric_cols].mean())
 
-
         # ==========================================
         # 6. EXPORT
         # ==========================================
-        
         print_header("Exporting Segmented Data")
+        
+        # Ensure processed data directory exists before saving
+        os.makedirs(PROCESSED_DATA_FOLDER, exist_ok=True)
+        
         export_filename = "Housing_segmented.csv"
         full_export_path = os.path.join(PROCESSED_DATA_FOLDER, export_filename)
         
