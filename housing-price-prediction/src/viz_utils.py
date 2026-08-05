@@ -1,8 +1,12 @@
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.axes import Axes
+from scipy import stats
+from src.data_utils import num_cat_cols_lst
 
 # ==========================================
 # Module Configuration
@@ -152,3 +156,53 @@ def residual_plt(pred: np.ndarray, residuals: np.ndarray,
     
     fig.tight_layout()
     return ax
+
+
+
+def sc_plot(data, x_lab, y_lab):
+    ax = sns.scatterplot(
+        data=data,
+        x=x_lab,
+        y=y_lab,
+        color='red'
+    )
+    ax.set_title(f"{y_lab} vs {x_lab}")
+    return ax
+
+
+
+def pair_plot(df : pd.DataFrame) : 
+    num_feat, _ =num_cat_cols_lst(df)
+    df_num = df[num_feat]
+
+    ax = sns.pairplot(df_num, corner= True, kind = 'reg')
+    ax.fig.suptitle('Matriz de dispersión de variables numéricas')
+
+    return ax
+
+
+def multivaraite_distr_plot(df):
+    num_cols , _ = num_cat_cols_lst(df)
+    print(num_cols)
+    N = len(df)
+    p = len(num_cols)
+    df_num = df[num_cols].to_numpy()
+    x_bar = np.mean(df_num, axis = 0)
+    S_inv = np.linalg.inv(np.cov(df_num, rowvar= False))
+    diff = df_num - x_bar
+    d2 = np.sum((diff @ S_inv) * diff, axis = 1)
+    d2_sorted = np.sort(d2)
+    probabilities = (np.arange(1, N + 1)-0.5) / N
+    theoretical_quantiles = stats.chi2.ppf(probabilities, df = p)
+
+    plt.figure(figsize=(7,6))
+    plt.scatter(theoretical_quantiles, d2_sorted, alpha= 0.7, edgecolors= 'k', label = 'Observed Data')
+    max_val = max(theoretical_quantiles.max(), d2_sorted.max())
+    plt.plot([0,max_val],[0,max_val],'r--',lw = 2, label ='Multivariate Normal y= x')
+    plt.xlabel('Theoretical Quantiles')
+    plt.ylabel('Empirical squared Mahalanobis distance')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+    return d2
+

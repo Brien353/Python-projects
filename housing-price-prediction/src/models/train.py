@@ -4,7 +4,12 @@ Trains and evaluates regression models using cross-validation and test set evalu
 Saves winning model artifacts for deployment pipelines.
 """
 import json
+import sys
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import joblib
 import pandas as pd
@@ -13,8 +18,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import cross_val_score, train_test_split
 from src.models.pipelines import linear_model_pipe
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-ARTIFACTS_DIR = PROJECT_ROOT / "models" / "artifacts"
+ARTIFACTS_DIR = PROJECT_ROOT / "src" / "models" / "artifacts"
 
 
 def evaluate_model(name, model, X_train, y_train, X_test, y_test):

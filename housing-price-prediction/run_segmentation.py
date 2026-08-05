@@ -1,12 +1,13 @@
 import os
+import sys
 import matplotlib.pyplot as plt
-from sklearn.cluster import HDBSCAN
 
 # Local imports
 from config.general_settings import PROCESSED_DATA_FOLDER, RAW_DATA_PATH
-from src.viz_utils import box_plt, corr_map_plt, dist_plt, clust_plot
-from src.data_utils import corr_mat, general_desc, feat_eng, load_data
-from src.pipelines import projection_pipe
+from sklearn.cluster import HDBSCAN
+from src.data_utils import corr_mat, feat_eng, general_desc, load_data,outlier_imp
+from src.models.pipelines import projection_pipe
+from src.viz_utils import box_plt, clust_plot, corr_map_plt, dist_plt
 
 
 def print_header(title: str) -> None:
@@ -43,8 +44,9 @@ def main():
         corr_map_plt(correlation_matrix)
         plt.show()
 
+
         # ==========================================
-        # 2. FEATURE ENGINEERING & REDUCTION
+        # 2. FEATURE ENGINEERING & UMAP projection
         # ==========================================
         print_header("Feature Engineering & Projection")
         df_engineered = feat_eng(df)
@@ -57,6 +59,11 @@ def main():
         embedding = pipeline.fit_transform(X)
         print(f"Projected high-dimensional data into shape: {embedding.shape}")
 
+
+        #============================================
+        # 3. OUTLIER DETECTION
+        #============================================
+        
         # ==========================================
         # 3. CLUSTERING (HDBSCAN)
         # ==========================================
@@ -85,8 +92,6 @@ def main():
         
         # Split clustered data from anomalies (-1)
         clustered_df = df_engineered[df_engineered['Cluster'] != -1]
-        outliers_df = df_engineered[df_engineered['Cluster'] == -1]
-
         numeric_cols = clustered_df.select_dtypes(include=['number']).columns
         housing_profiles = clustered_df[numeric_cols].groupby('Cluster').mean()
         
@@ -113,17 +118,9 @@ def main():
             print("-" * 60)
 
         # ==========================================
-        # 5. OUTLIER ANALYSIS
-        # ==========================================
-        print_header("Outlier Analysis")
-        print(f"HDBSCAN identified {len(outliers_df)} anomalous properties.")
-        if not outliers_df.empty:
-            print("\nOutlier Averages:")
-            print(outliers_df[numeric_cols].mean())
-
-        # ==========================================
         # 6. EXPORT
         # ==========================================
+
         print_header("Exporting Segmented Data")
         
         # Ensure processed data directory exists before saving
