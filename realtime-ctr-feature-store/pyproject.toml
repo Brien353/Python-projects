@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realtime-ctr-feature-store"
+version = "0.0.1"
+description = "Production streaming MLOps architecture for CTR prediction"
+authors = [{ name = "Brien Navarro" }]
+requires-python = ">=3.10"
+dependencies = [
+    # Data Processing & Storage
+    "pandas>=2.0.0",
+    "pyarrow>=14.0.0",
+    "duckdb>=0.9.0",
+    "numpy>=1.24.0",
+
+    # Machine Learning
+    "lightgbm>=4.0.0",
+    "scikit-learn>=1.3.0",
+
+    # Feature Store & Ingestion
+    "feast[redis]>=0.34.0",
+
+    # API & Microservices
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "pydantic>=2.0.0",
+    "requests>=2.31.0",
+
+    # Drift & Monitoring
+    "evidently>=0.4.0",
+    "prometheus-client>=0.17.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "jupyter>=1.0.0",
+    "datasets>=2.14.0", # For Hugging Face streaming downloads
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "feature_store*"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "B", "I"] # Syntax errors, flake8 checks, bugbear, import sorting
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
