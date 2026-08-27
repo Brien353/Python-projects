@@ -158,51 +158,40 @@ def residual_plt(pred: np.ndarray, residuals: np.ndarray,
     return ax
 
 
-
-def sc_plot(data, x_lab, y_lab):
-    ax = sns.scatterplot(
-        data=data,
-        x=x_lab,
-        y=y_lab,
-        color='red'
-    )
-    ax.set_title(f"{y_lab} vs {x_lab}")
-    return ax
-
-
-
 def pair_plot(df : pd.DataFrame) : 
     num_feat, _ =num_cat_cols_lst(df)
     df_num = df[num_feat]
-
+    plt.fig(figsize = ())
     ax = sns.pairplot(df_num, corner= True, kind = 'reg')
     ax.fig.suptitle('Matriz de dispersión de variables numéricas')
 
     return ax
 
 
-def multivaraite_distr_plot(df):
-    num_cols , _ = num_cat_cols_lst(df)
-    print(num_cols)
-    N = len(df)
-    p = len(num_cols)
-    df_num = df[num_cols].to_numpy()
-    x_bar = np.mean(df_num, axis = 0)
-    S_inv = np.linalg.inv(np.cov(df_num, rowvar= False))
-    diff = df_num - x_bar
-    d2 = np.sum((diff @ S_inv) * diff, axis = 1)
-    d2_sorted = np.sort(d2)
-    probabilities = (np.arange(1, N + 1)-0.5) / N
-    theoretical_quantiles = stats.chi2.ppf(probabilities, df = p)
 
-    plt.figure(figsize=(7,6))
-    plt.scatter(theoretical_quantiles, d2_sorted, alpha= 0.7, edgecolors= 'k', label = 'Observed Data')
-    max_val = max(theoretical_quantiles.max(), d2_sorted.max())
-    plt.plot([0,max_val],[0,max_val],'r--',lw = 2, label ='Multivariate Normal y= x')
-    plt.xlabel('Theoretical Quantiles')
-    plt.ylabel('Empirical squared Mahalanobis distance')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-    return d2
+def sc_plot(df,x_bar, y_bar) : 
+    ax = sns.scatterplot(data= df,
+                         x = x_bar,
+                         y = y_bar,
+                         alpha =  0.5)
+
+    max_area = 10000
+    max_price = 1e7
+    
+    ax.vlines(x = max_area,linestyle = '--', color = 'red',ymin=ax.get_ylim()[0], ymax=ax.get_ylim()[1], label= ' Area cut-off')
+    ax.hlines(y = max_price,linestyle = '--', color = 'blue',xmin=ax.get_xlim()[0], xmax=ax.get_xlim()[1], label='Price cut-off')
+
+    ax.fill_between(
+        x = [0,max_area],
+        y1=  0,
+        y2 = max_price,
+        color = 'green',
+        alpha = 0.1,
+        label = 'Kept Region'
+    )
+
+    ax.legend(loc='upper right')
+
+    return ax
+
 

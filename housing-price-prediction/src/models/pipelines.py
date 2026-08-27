@@ -4,7 +4,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, RobustScaler
 
 
 def num_pipe() -> Pipeline:
@@ -15,7 +15,7 @@ def num_pipe() -> Pipeline:
     return Pipeline(
         steps=[
             ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', StandardScaler())
+            ('scaler', RobustScaler())
         ]
     )
 
@@ -43,10 +43,9 @@ def prep_pipe(num_features: list[str] = NUM_CL_FEAT,
     """
     return ColumnTransformer(
         transformers=[
-            ('num', num_pipe(), num_features),
-            ('cat', cat_pipe(), cat_features)
-        ],
-        remainder='drop' 
+            ('num', num_pipe(), NUM_CL_FEAT),
+            ('cat', cat_pipe(), CAT_CL_FEAT)
+        ]
     )
 
 
@@ -68,7 +67,7 @@ def projection_pipe(n_components: int = 2,
                 n_components=n_components,
                 n_neighbors=n_neighbors, 
                 min_dist=0.0,
-                metric='euclidean',
+                metric='cosine',
                 random_state=random_state
             ))
         ]

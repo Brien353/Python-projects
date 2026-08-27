@@ -52,23 +52,27 @@ def corr_mat(df: pd.DataFrame) -> pd.DataFrame:
     return df[num_cols].corr()
 
 
-def outlier_imp(df, variable, r = 1.5, log_var = True):
 
-    df[variable] = np.log1p(df[variable])
-    
-    q1 = df[variable].quantile(0.25)
-    q3 = df[variable].quantile(0.75)
-
+def tuckey_outlier_detection(df, var, rig, log_apply= False):
+    p = np.log1p(df[var]) if log_apply else df[var]
+    q1 = p.quantile(0.25)
+    q3 = p.quantile(0.75)
     iqr = q3-q1
-    lower = q1-r*iqr
-    upper = q3 + r*iqr
-
-    outlier_mask = (df[variable] > upper) | (df[variable] < lower)
-    founded_outliers = int(outlier_mask.sum())
-    not_outlier = ~ outlier_mask
-
-
+    lower_bound = q1 - rig* iqr
+    upper_bound = q3 + rig  * iqr
+    outlier_mask = ( p <= lower_bound) | ( p >= upper_bound)
+    dg = df[~outlier_mask].copy()
+    num_outliers = int(outlier_mask.sum())
+    return dg,num_outliers
 
 
-
-    return  df[outlier_mask].copy(), founded_outliers
+def clean_df(df):
+    max_price = 1e7
+    max_area = 10000
+    condition = (df['area'] <= max_area) & (df['price'] <= max_price)
+    df_cleaned = df[condition]
+    noise = ~condition
+    df_noise = df[noise]
+    percentage_of_deleted = (len(df_noise)/len(df)) * 100
+    return df_cleaned, percentage_of_deleted
+    

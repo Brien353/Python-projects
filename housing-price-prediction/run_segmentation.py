@@ -1,13 +1,20 @@
+""" Module that performs EDA, outlier detection and data cleaninig pipeline  so that ML models can use the information for proper training"""
 import os
-import sys
-import matplotlib.pyplot as plt
 
-# Local imports
+import matplotlib.pyplot as plt
 from config.general_settings import PROCESSED_DATA_FOLDER, RAW_DATA_PATH
 from sklearn.cluster import HDBSCAN
-from src.data_utils import corr_mat, feat_eng, general_desc, load_data,outlier_imp
+from src.data_utils import (
+    clean_df,
+    corr_mat,
+    feat_eng,
+    general_desc,
+    load_data,
+    num_cat_cols_lst,
+    tuckey_outlier_detection,
+)
 from src.models.pipelines import projection_pipe
-from src.viz_utils import box_plt, clust_plot, corr_map_plt, dist_plt
+from src.viz_utils import box_plt, clust_plot, corr_map_plt, dist_plt, sc_plot
 
 
 def print_header(title: str) -> None:
@@ -24,67 +31,120 @@ def main():
         # ==========================================
         # 1. DATA LOADING & EDA
         # ==========================================
-        print_header("Exploratory Data Analysis")
-        print("Loading data...")
+
+        print_header("Data loading")
+
+
         df = load_data(RAW_DATA_PATH)
+
         print("Data loaded successfully.")
 
-        print("\n--- Generating Statistics Summary ---")
+
+
+        print_header("Data summary")
+
         general_desc(df)
 
-        print("\n--- Generating EDA Visualizations ---")
-        dist_plt(df, "price")
-        plt.show()
-        box_plt(df, "price")
-        plt.show()
+        print("Data summary created successfully.")
 
-        print("\n--- Calculating and Displaying Correlation Matrix ---")
+
+        print_header("Initializing EDA for both numerical and categorical variables")
+
+        print_header("Initializing numerical variables distribution Visualization")
+        n_cols , _ = num_cat_cols_lst(df)
+
+        for col in n_cols : 
+            dist_plt(df, f"{col}",show_kde= True, log_scale= False)
+            plt.title(f"Variable : {col} distribution")
+            plt.show()
+
+        print_header("Initializing numerical variables boxplot Visualization")
+
+        for col in n_cols:
+            box_plt(df, f"{col}", log_scale= False)
+            plt.title(f"Variable : {col} box plot")
+            plt.show()
+    
+        print_header("Calculating and Displaying Correlation Matrix ")
+
         correlation_matrix = corr_mat(df)
+
         print(correlation_matrix)
+
         corr_map_plt(correlation_matrix)
         plt.show()
 
+        #===============================================
+        # 2. Data cleaninig
+        #===============================================
+
+        import sys
+
+        print_header('Data cleaninig')
+        ds,o_num = tuckey_outlier_detection(df,'price', 1.5)
+        print(ds,o_num)
+        sys.exit()
+        
+        sc_plot(df,'area','price')
+        plt.title("Area-Price scatter plot for extreme value trimming")
+        plt.show()
+
+        df, deleted_reg = clean_df(df)
+
+        print(f'The percentage of deleted elements are : {deleted_reg : .2f}%')
 
         # ==========================================
-        # 2. FEATURE ENGINEERING & UMAP projection
+        # 3. FEATURE ENGINEERING & UMAP projection
         # ==========================================
-        print_header("Feature Engineering & Projection")
+
+        print_header("Initializing Feature engineering")
         df_engineered = feat_eng(df)
 
         # Separate features and target
         X = df_engineered.drop(columns=["price"])
 
-        print("Running Projection Pipeline (UMAP)...")
+        
+        print_header("Running UMAP projection pipeline")
+
         pipeline = projection_pipe()
         embedding = pipeline.fit_transform(X)
-        print(f"Projected high-dimensional data into shape: {embedding.shape}")
 
+        print(f"Data projected succesfully, projected data dimensions are: {embedding.shape}")
 
-        #============================================
-        # 3. OUTLIER DETECTION
-        #============================================
-        
         # ==========================================
-        # 3. CLUSTERING (HDBSCAN)
+        # 4. CLUSTERING (HDBSCAN)
         # ==========================================
-        print_header("Clustering & Labeling")
+
+        print_header("Initializing Clustering")
+
+        print_header("Initializing clustering HDSCAN algorithm")
+
         clustering = HDBSCAN(
-            min_cluster_size=20,
+            min_cluster_size=30,
             min_samples=5,
             metric='euclidean',
             cluster_selection_method='eom'
         )
-        
+
+        print("HDBSCAN clustering was performed succesfully.")
+
+        print_header("Labeling dataset using HDBSCAN clustering algorithm")
+
         cluster_labels = clustering.fit_predict(embedding)
+
         print("Labeling performed successfully.")
 
-        print("\nPlotting clusters...")
+        print_header("Plotting clusters")
+
         clust_plot(embedding, cluster_labels)
         plt.show()
 
+        print('Clustering visualization ended succesfully')
+
         # ==========================================
-        # 4. PROFILING & SEGMENTATION INSIGHTS
+        # 5. PROFILING & SEGMENTATION INSIGHTS
         # ==========================================
+
         print_header("Housing Market Segmentation Insights")
         
         # Add cluster labels to dataframe
@@ -99,8 +159,8 @@ def main():
 
         tier_descriptions = {
             0: ("Entry-Level & Budget Homes", "Smallest footprint, single-bathroom starter homes with minimal parking."),
-            1: ("Premium Multi-Story Luxury Estates", "Largest footprint, heavily vertical (3.7+ stories), high-end premium market."),
-            2: ("Spacious Suburban Family Homes", "Highest bedroom/bathroom counts, spread horizontally. High utility for families.")
+            1: ("Mid-Tier Family Residences", "Moderate footprint, multi-bathroom homes with lower story heights and balanced utility."),
+            2: ("Premium Vertical Luxury Estates", "Larguest footprint, multy-story layout (3.8 stories average), highest price tag and area")
         }
 
         for cluster_id, row in housing_profiles.iterrows():
